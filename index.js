@@ -76,31 +76,36 @@ app.post('/api/notes', async (req, res) => {
 
 app.get('/api/notes/:user_id', async (req, res) => {
 
-    const { user_id } = req.params
+    try {
+        const { user_id } = req.params
 
-    const { data, error } = await supabase
-        .from('content')
-        .select('*')
-        .eq('user_id', user_id)
-        .order('created_at', { ascending: false });
-
-
-    if (data.length <= 0) {
-        return res.status(400).json({ message: "Please provide valid id." })
-    }
+        const { data, error } = await supabase
+            .from('content')
+            .select('*')
+            .eq('user_id', user_id)
+            .order('created_at', { ascending: false });
 
 
-    if (error) {
-        return res.status(400).json({
-            status: false,
-            error: error
+        if (data.length <= 0) {
+            return res.status(400).json({ message: "Please provide valid id." })
+        }
+
+
+        if (error) {
+            return res.status(400).json({
+                status: false,
+                error: error
+            })
+        }
+
+        return res.status(200).json({
+            message: "Data fetched successfully.",
+            data: data
         })
-    }
 
-    return res.status(200).json({
-        message: "Data fetched successfully.",
-        data: data
-    })
+    } catch (error) {
+        return res.status(500).json({ status: false, message: "Something Went wring. Please try again." })
+    }
 
 })
 
